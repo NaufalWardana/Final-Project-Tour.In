@@ -1,5 +1,6 @@
 import usePromos from "../../hooks/usePromo";
 import Navbar from "../../components/Navbar/Navbar";
+import Footer from "../../components/Footer";
 
 // Komponen untuk menampilkan halaman promo
 const PromoPage = () => {
@@ -36,7 +37,7 @@ const PromoPage = () => {
     <div>
       <Navbar />
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8 text-center">Promo Terbaru</h1>
+        <h1 className="text-4xl font-bold mb-8 text-center">Promo Terbaru</h1>
 
         {/* Menampilkan pesan jika tidak ada promo atau daftar promo yang tersedia */}
         {promos.length === 0 ? (
@@ -96,6 +97,7 @@ const PromoPage = () => {
           </div>
         )}
       </div>
+      <Footer />
     </div>
   );
 };

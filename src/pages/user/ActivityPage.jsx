@@ -1,9 +1,10 @@
 import { useState, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
-import { MapPin, Star, Users, Clock } from "lucide-react";
+import { MapPin, Star, Users } from "lucide-react";
 import useActivity from "../../hooks/useActivity";
 import useCategories from "../../hooks/useCategory";
 import Navbar from "../../components/Navbar/Navbar";
+import Footer from "../../components/Footer";
 
 const ActivityCard = ({ activity }) => {
   const [imageError, setImageError] = useState(false);
@@ -225,6 +226,7 @@ const DestinationsPage = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };
