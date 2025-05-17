@@ -9,9 +9,11 @@ import {
   EyeIcon,
   ChevronLeft,
   ChevronRight,
+  X,
 } from "lucide-react";
 import usePromos from "../../hooks/usePromo";
 import AdminSidebar from "../../components/AdminSidebar";
+import { useNavigate } from "react-router-dom";
 
 const PromoManagement = () => {
   /* ===== STATE MANAGEMENT ===== */
@@ -30,6 +32,9 @@ const PromoManagement = () => {
   const [searchTerm, setSearchTerm] = useState(""); // Input pencarian
   const [filteredPromos, setFilteredPromos] = useState([]); // Hasil filter
   const [showForm, setShowForm] = useState(false); // Toggle form modal
+  const [proofImage, setProofImage] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const navigate = useNavigate();
 
   // State untuk form dengan nilai default
   const [formData, setFormData] = useState({
@@ -58,6 +63,27 @@ const PromoManagement = () => {
   }, [searchTerm, promos]);
 
   /* ===== EVENT HANDLERS ===== */
+
+  // Handler untuk upload gambar
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setProofImage(file);
+      // Membuat preview URL untuk gambar
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Handler untuk menghapus gambar yang dipilih
+  const handleRemoveImage = () => {
+    setProofImage(null);
+    setPreviewUrl(null);
+  };
+
   // Handler untuk perubahan input form
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -71,11 +97,26 @@ const PromoManagement = () => {
       alert("Title and Promo Code are required!");
       return;
     }
+
+    let imageUrl = formData.imageUrl;
+
+    // Simulasi upload gambar jika ada file baru
+    if (proofImage) {
+      // TODO: Replace this with actual image upload logic
+      const fakeUploadedUrl = URL.createObjectURL(proofImage);
+      imageUrl = fakeUploadedUrl;
+    }
+
+    const payload = { ...formData, imageUrl };
+
     const success = formData.id
-      ? await updatePromo(formData.id, formData)
-      : await createPromo(formData);
+      ? await updatePromo(formData.id, payload)
+      : await createPromo(payload);
+
     if (success) {
       setShowForm(false);
+      setProofImage(null);
+      setPreviewUrl(null);
       await refreshPromos();
     }
   };
@@ -180,7 +221,7 @@ const PromoManagement = () => {
                       placeholder="Judul"
                       value={formData.title}
                       onChange={handleInputChange}
-                      className="p-2 rounded w-full"
+                      className="p-2 rounded w-full text-white"
                     />
                   </div>
                   <div className="col-span-2 mb-4">
@@ -190,20 +231,47 @@ const PromoManagement = () => {
                       placeholder="Deskripsi"
                       value={formData.description}
                       onChange={handleInputChange}
-                      className="p-2 rounded w-full"
+                      className="p-2 rounded w-full text-white"
                     />
                   </div>
-                  <div className="mb-4">
-                    <label className="text-white">URL Gambar</label>
+
+                  {/* Upload Image */}
+                  <div className="col-span-2 mb-4">
+                    <label className="text-white">Upload Image Activity</label>
                     <input
-                      type="text"
-                      name="imageUrl"
-                      placeholder="URL Gambar"
-                      value={formData.imageUrl}
-                      onChange={handleInputChange}
-                      className="p-2 rounded w-full"
+                      type="file"
+                      onChange={handleFileChange}
+                      className="hidden"
+                      id="proof-upload"
+                      accept="image/*"
                     />
+
+                    <label
+                      htmlFor="proof-upload"
+                      className="w-full p-2 rounded bg-gray-700 text-white text-center cursor-pointer block"
+                    >
+                      {previewUrl || formData.imageUrl
+                        ? "Change Image"
+                        : "Upload Image"}
+                    </label>
+
+                    {(previewUrl || formData.imageUrl) && (
+                      <div className="mt-2 relative">
+                        <img
+                          src={previewUrl || formData.imageUrl}
+                          alt="Preview"
+                          className="w-full max-h-64 object-contain rounded"
+                        />
+                        <button
+                          onClick={handleRemoveImage}
+                          className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600"
+                        >
+                          <X size={16} />
+                        </button>
+                      </div>
+                    )}
                   </div>
+
                   <div className="col-span-2 mb-4">
                     <label className="text-white">Syarat dan Ketentuan</label>
                     <textarea
@@ -211,7 +279,7 @@ const PromoManagement = () => {
                       placeholder="Syarat dan Ketentuan"
                       value={formData.terms_condition}
                       onChange={handleInputChange}
-                      className="p-2 rounded w-full"
+                      className="p-2 rounded w-full text-white"
                     />
                   </div>
                   <div className="mb-4">
@@ -222,7 +290,7 @@ const PromoManagement = () => {
                       placeholder="Kode Promo"
                       value={formData.promo_code}
                       onChange={handleInputChange}
-                      className="p-2 rounded w-full"
+                      className="p-2 rounded w-full text-white"
                     />
                   </div>
                   <div className="mb-4">
@@ -233,7 +301,7 @@ const PromoManagement = () => {
                       placeholder="Diskon Promo"
                       value={formData.promo_discount_price}
                       onChange={handleInputChange}
-                      className="p-2 rounded w-full"
+                      className="p-2 rounded w-full text-white"
                     />
                   </div>
                   <div className="mb-4">
@@ -244,7 +312,7 @@ const PromoManagement = () => {
                       placeholder="Minimal Klaim"
                       value={formData.minimum_claim_price}
                       onChange={handleInputChange}
-                      className="p-2 rounded w-full"
+                      className="p-2 rounded w-ful text-white"
                     />
                   </div>
                 </div>

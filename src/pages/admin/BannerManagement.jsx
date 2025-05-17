@@ -8,6 +8,7 @@ import {
   SearchIcon,
   ChevronLeft,
   ChevronRight,
+  X,
 } from "lucide-react";
 import useBanner from "../../hooks/useBanner";
 import AdminSidebar from "../../components/AdminSidebar";
@@ -35,6 +36,7 @@ const BannerManagement = () => {
     id: "", // ID banner (kosong untuk banner baru)
     name: "", // Nama banner
     imageUrl: "", // URL gambar banner
+    imageFile: null, // File gambar banner
   });
 
   /* ===== PAGINATION STATE ===== */
@@ -52,6 +54,18 @@ const BannerManagement = () => {
   }, [searchTerm, banners]);
 
   /* ===== EVENT HANDLERS ===== */
+  // Handler untuk upload image
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData((prev) => ({
+        ...prev,
+        imageFile: file,
+        imageUrl: URL.createObjectURL(file), // opsional, untuk preview
+      }));
+    }
+  };
+
   // Handler untuk input form
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -61,13 +75,29 @@ const BannerManagement = () => {
   // Handler untuk submit form (create/update)
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.name || !formData.imageUrl) {
-      alert("Name and Image URL are required!");
+    if (!formData.name || (!formData.imageFile && !formData.imageUrl)) {
+      alert("Name and Image file are required!");
       return;
     }
-    const success = formData.id
-      ? await updateBanner(formData.id, formData)
-      : await createBanner(formData);
+
+    // Buat FormData untuk upload
+    const data = new FormData();
+    data.append("name", formData.name);
+
+    // Jika ada file, append file
+    if (formData.imageFile) {
+      data.append("image", formData.imageFile);
+    }
+
+    let success = false;
+    if (formData.id) {
+      // Update banner
+      success = await updateBanner(formData.id, data);
+    } else {
+      // Create banner baru
+      success = await createBanner(data);
+    }
+
     if (success) {
       setShowForm(false);
       await refreshBanners();
@@ -168,19 +198,41 @@ const BannerManagement = () => {
                       placeholder="Nama"
                       value={formData.name}
                       onChange={handleInputChange}
-                      className="p-2 rounded w-full"
+                      className="p-2 rounded w-full text-white"
                     />
                   </div>
                   <div className="mb-4">
-                    <label className="text-white">URL Gambar</label>
+                    <label className="text-white">Upload Gambar</label>
                     <input
-                      type="text"
-                      name="imageUrl"
-                      placeholder="URL Gambar"
-                      value={formData.imageUrl}
-                      onChange={handleInputChange}
-                      className="p-2 rounded w-full"
+                      type="file"
+                      name="imageFile"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      className="p-2 rounded w-full text-white bg-gray-700"
                     />
+
+                    {formData.imageUrl && (
+                      <div className="relative mb-4">
+                        <img
+                          src={formData.imageUrl}
+                          alt="Preview"
+                          className="w-full max-h-48 object-contain rounded"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setFormData((prev) => ({
+                              ...prev,
+                              imageFile: null,
+                              imageUrl: "",
+                            }));
+                          }}
+                          className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded"
+                        >
+                          <X size={16} />
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="mt-4 flex justify-end gap-4">

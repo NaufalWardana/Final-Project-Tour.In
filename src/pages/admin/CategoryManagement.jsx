@@ -8,9 +8,9 @@ import {
   SearchIcon,
   ChevronLeft,
   ChevronRight,
+  X,
 } from "lucide-react";
 import useCategories from "../../hooks/useCategory";
-import useAuth from "../../hooks/useAuth";
 import AdminSidebar from "../../components/AdminSidebar";
 
 const CategoryManagement = () => {
@@ -27,7 +27,6 @@ const CategoryManagement = () => {
     updateCategory, // Fungsi untuk update kategori
     deleteCategory, // Fungsi untuk hapus kategori
   } = useCategories();
-  const { token } = useAuth();
 
   // State untuk UI
   const [selectedCategory, setSelectedCategory] = useState(null); // Kategori yang dipilih untuk edit
@@ -56,15 +55,30 @@ const CategoryManagement = () => {
     }
   };
 
+  const uploadImageAndGetUrl = async (file) => {
+    // simulasikan upload dan return URL
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(URL.createObjectURL(file)); // hanya local preview, bukan untuk production
+      }, 1000);
+    });
+  };
   /* ===== EVENT HANDLERS ===== */
   // Handler untuk membuat kategori baru
   const handleCreateCategory = async (categoryData) => {
+    let imageUrl = categoryData.imageUrl;
+    if (categoryData.imageFile) {
+      imageUrl = await uploadImageAndGetUrl(categoryData.imageFile);
+    }
+
     const success = await createCategory({
       name: categoryData.name,
-      imageUrl: categoryData.imageUrl,
+      imageUrl,
     });
+
     if (success) {
       setShowCreateModal(false);
+      setSelectedCategory(null);
     }
   };
 
@@ -140,8 +154,16 @@ const CategoryManagement = () => {
               <SearchIcon className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
             </div>
           </div>
+
           <button
-            onClick={() => setShowCreateModal(true)}
+            onClick={() => {
+              setSelectedCategory({
+                name: "",
+                imageUrl: null,
+                imageFile: null,
+              });
+              setShowCreateModal(true);
+            }}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"
           >
             <PlusIcon className="h-5 w-5" />
@@ -264,19 +286,47 @@ const CategoryManagement = () => {
                   })
                 }
               />
-              <label className="block text-gray-400 mb-2">URL Gambar</label>
+
+              <label className="block text-gray-400 mb-2">Upload Image</label>
               <input
-                type="text"
-                placeholder="URL Gambar"
+                type="file"
+                accept="image/*"
                 className="w-full bg-gray-700 text-white px-4 py-2 rounded-lg mb-4"
-                value={selectedCategory?.imageUrl || ""}
-                onChange={(e) =>
-                  setSelectedCategory({
-                    ...selectedCategory,
-                    imageUrl: e.target.value,
-                  })
-                }
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  if (file) {
+                    const imagePreviewUrl = URL.createObjectURL(file);
+                    setSelectedCategory({
+                      ...selectedCategory,
+                      imageUrl: imagePreviewUrl,
+                      imageFile: file,
+                    });
+                  }
+                }}
               />
+
+              {selectedCategory?.imageUrl && (
+                <div className="relative mb-4">
+                  <img
+                    src={selectedCategory.imageUrl}
+                    alt="Preview"
+                    className="w-full max-h-48 object-contain rounded"
+                  />
+                  <button
+                    onClick={() =>
+                      setSelectedCategory({
+                        ...selectedCategory,
+                        imageUrl: null,
+                        imageFile: null,
+                      })
+                    }
+                    className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              )}
+
               <div className="flex justify-end gap-4">
                 <button
                   className="px-4 py-2 bg-gray-600 text-white rounded-lg"
@@ -314,19 +364,47 @@ const CategoryManagement = () => {
                   })
                 }
               />
-              <label className="block text-gray-400 mb-2">URL Gambar</label>
+
+              <label className="block text-gray-400 mb-2">Upload Image</label>
               <input
-                type="text"
-                placeholder="URL Gambar"
+                type="file"
+                accept="image/*"
                 className="w-full bg-gray-700 text-white px-4 py-2 rounded-lg mb-4"
-                value={selectedCategory.imageUrl || ""}
-                onChange={(e) =>
-                  setSelectedCategory({
-                    ...selectedCategory,
-                    imageUrl: e.target.value,
-                  })
-                }
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  if (file) {
+                    const imagePreviewUrl = URL.createObjectURL(file);
+                    setSelectedCategory({
+                      ...selectedCategory,
+                      imageUrl: imagePreviewUrl,
+                      imageFile: file,
+                    });
+                  }
+                }}
               />
+
+              {selectedCategory?.imageUrl && (
+                <div className="relative mb-4">
+                  <img
+                    src={selectedCategory.imageUrl}
+                    alt="Preview"
+                    className="w-full max-h-48 object-contain rounded "
+                  />
+                  <button
+                    onClick={() =>
+                      setSelectedCategory({
+                        ...selectedCategory,
+                        imageUrl: null,
+                        imageFile: null,
+                      })
+                    }
+                    className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              )}
+
               <div className="flex justify-end gap-4">
                 <button
                   className="px-4 py-2 bg-gray-600 text-white rounded-lg"

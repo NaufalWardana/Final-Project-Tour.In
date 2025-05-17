@@ -32,6 +32,18 @@ const TransactionManagement = () => {
   const [showToast, setShowToast] = useState(false);
 
   const [formData, setFormData] = useState({ id: "", status: "" });
+  const itemsPerPage = 10;
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentTransactions = filteredTransactions.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
+
+  useEffect(() => {
+    refreshTransactions();
+  }, []);
 
   useEffect(() => {
     let result = transactions;
@@ -56,6 +68,12 @@ const TransactionManagement = () => {
 
     setFilteredTransactions(result);
   }, [searchTerm, transactions, filterStatus]);
+
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -92,15 +110,6 @@ const TransactionManagement = () => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
-  const itemsPerPage = 10;
-  const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentTransactions = filteredTransactions.slice(
-    startIndex,
-    startIndex + itemsPerPage
-  );
 
   if (transactionsLoading) {
     return (

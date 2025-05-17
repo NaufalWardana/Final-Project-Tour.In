@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { BASE_URL } from "../Helper/endPoint";
 
 // Hook kustom untuk mengelola promo
 const usePromos = () => {
@@ -11,14 +12,11 @@ const usePromos = () => {
   // Fungsi untuk mengambil semua promo
   const fetchPromos = async () => {
     try {
-      const response = await axios.get(
-        "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/promos",
-        {
-          headers: {
-            apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
-          },
-        }
-      );
+      const response = await axios.get(`${BASE_URL.API}/promos`, {
+        headers: {
+          apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
+        },
+      });
       setPromos(response.data.data); // Simpan promo yang diambil ke dalam state
     } catch (err) {
       setError(err.message); // Simpan pesan error ke dalam state
@@ -39,7 +37,7 @@ const usePromos = () => {
       promoData.minimum_claim_price = Number(promoData.minimum_claim_price);
 
       const response = await axios.post(
-        "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/create-promo",
+        `${BASE_URL.API}/create-promo`,
         promoData,
         {
           headers: {
@@ -69,7 +67,7 @@ const usePromos = () => {
       promoData.minimum_claim_price = Number(promoData.minimum_claim_price);
 
       const response = await axios.post(
-        `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/update-promo/${id}`,
+        `${BASE_URL.API}/update-promo/${id}`,
         promoData,
         {
           headers: {
@@ -91,7 +89,7 @@ const usePromos = () => {
   const deletePromo = async (id) => {
     try {
       const response = await axios.delete(
-        `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/delete-promo/${id}`,
+        `${BASE_URL.API}/delete-promo/${id}`,
         {
           headers: {
             apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",

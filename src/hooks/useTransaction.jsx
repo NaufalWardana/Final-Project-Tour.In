@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { BASE_URL } from "../Helper/endPoint";
 
 // Hook kustom untuk mengelola transaksi
 const useTransaction = () => {
@@ -21,7 +22,7 @@ const useTransaction = () => {
         paymentMethodId,
       });
       const response = await axios.post(
-        "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/create-transaction",
+        `${BASE_URL.API}/create-transaction`,
         {
           cartIds,
           paymentMethodId,
@@ -37,7 +38,7 @@ const useTransaction = () => {
 
       // Ambil transaksi terbaru untuk mendapatkan ID transaksi
       const transactionsResponse = await axios.get(
-        "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/my-transactions",
+        `${BASE_URL.API}/my-transactions`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -78,7 +79,7 @@ const useTransaction = () => {
       formData.append("image", file);
 
       const response = await axios.post(
-        "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/upload-image",
+        `${BASE_URL.API}/upload-image`,
         formData,
         {
           headers: {
@@ -108,7 +109,7 @@ const useTransaction = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/transaction/${transactionId}`,
+        `${BASE_URL.API}/transaction/${transactionId}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -139,15 +140,12 @@ const useTransaction = () => {
   const fetchPaymentMethods = async () => {
     try {
       setLoading(true);
-      const response = await fetch(
-        "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/payment-methods",
-        {
-          headers: {
-            apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      const response = await fetch(`${BASE_URL.API}/payment-methods`, {
+        headers: {
+          apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       const data = await response.json();
       setPaymentMethods(data.data || []);
     } catch (err) {
@@ -160,15 +158,12 @@ const useTransaction = () => {
   // Fungsi untuk mengambil semua transaksi pengguna
   const fetchMyTransactions = async () => {
     try {
-      const response = await axios.get(
-        "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/my-transactions",
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
-          },
-        }
-      );
+      const response = await axios.get(`${BASE_URL.API}/my-transactions`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
+        },
+      });
       setTransactions(response.data.data);
     } catch (err) {
       setError(err.message);
@@ -182,7 +177,7 @@ const useTransaction = () => {
     try {
       setLoading(true);
       const response = await axios.post(
-        `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/update-transaction-proof-payment/${transactionId}`,
+        `${BASE_URL.API}/update-transaction-proof-payment/${transactionId}`,
         { proofPaymentUrl },
         {
           headers: {
@@ -212,15 +207,12 @@ const useTransaction = () => {
       if (!token) {
         throw new Error("Token not found");
       }
-      const response = await axios.get(
-        "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/all-transactions",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
-          },
-        }
-      );
+      const response = await axios.get(`${BASE_URL.API}/all-transactions`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
+        },
+      });
       setTransactions(response.data.data);
     } catch (err) {
       console.error("Error fetching all transactions:", err);
@@ -240,7 +232,7 @@ const useTransaction = () => {
     try {
       setLoading(true);
       const response = await axios.post(
-        `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/update-transaction-status/${transactionId}`,
+        `${BASE_URL.API}/update-transaction-status/${transactionId}`,
         { status },
         {
           headers: {
@@ -267,7 +259,7 @@ const useTransaction = () => {
     try {
       setLoading(true);
       const response = await axios.delete(
-        `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/delete-transaction/${transactionId}`,
+        `${BASE_URL.API}/delete-transaction/${transactionId}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -291,7 +283,6 @@ const useTransaction = () => {
   // Ambil metode pembayaran dan semua transaksi saat komponen pertama kali dirender
   useEffect(() => {
     fetchPaymentMethods();
-    fetchMyTransactions();
   }, []);
 
   // Kembalikan variabel state dan fungsi untuk digunakan dalam komponen

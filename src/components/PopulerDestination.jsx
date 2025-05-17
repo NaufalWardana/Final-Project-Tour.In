@@ -22,7 +22,7 @@ const ActivityList = () => {
 
   // Filter activities dari ID yang spesifik
   const specificIds = [
-    "466df1da-2a08-4e0e-97aa-b5df5960afbe",
+    "e2a16368-3160-4b35-84a4-cef6fa54187b",
     "b3cd3802-3ecc-4bf8-b67f-daba55b86ec4",
     "35f03fab-d54a-4a0e-9f72-a6c954a179ba",
   ];

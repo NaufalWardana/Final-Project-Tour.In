@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Minus, Plus, Trash2, CreditCard, Wallet } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -31,10 +31,17 @@ const CartPage = () => {
     paymentMethods,
     createTransaction,
     loading: creatingTransaction,
+    fetchMyTransactions,
   } = useTransaction();
   const [deleteItem, setDeleteItem] = useState(null);
   const [selectedPayment, setSelectedPayment] = useState(null);
   const { updateCartCount } = useCartContext();
+
+  console.log("aaaa8291191 masuk");
+
+  useEffect(() => {
+    fetchMyTransactions();
+  }, []);
 
   // Tampilan loading
   if (loading) {

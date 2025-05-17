@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useCartContext } from "../context/CartContext";
+import { BASE_URL } from "../Helper/endPoint";
 
 // Hook kustom untuk mengelola keranjang belanja
 const useCart = () => {
@@ -14,15 +15,12 @@ const useCart = () => {
   // Fungsi untuk mengambil semua item keranjang
   const fetchCartItems = async () => {
     try {
-      const response = await axios.get(
-        "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/carts",
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
-          },
-        }
-      );
+      const response = await axios.get(`${BASE_URL.API}/carts`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
+        },
+      });
       setCartItems(response.data.data); // Simpan item keranjang yang diambil ke dalam state
       updateCartCount(); // Perbarui jumlah item keranjang
     } catch (err) {
@@ -36,7 +34,7 @@ const useCart = () => {
   const addToCart = async (activityId) => {
     try {
       const response = await axios.post(
-        "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/add-cart",
+        `${BASE_URL.API}/add-cart`,
         { activityId },
         {
           headers: {
@@ -59,7 +57,7 @@ const useCart = () => {
   const updateQuantity = async (cartId, quantity) => {
     try {
       const response = await axios.post(
-        `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/update-cart/${cartId}`,
+        `${BASE_URL.API}/update-cart/${cartId}`,
         { quantity },
         {
           headers: {
@@ -82,7 +80,7 @@ const useCart = () => {
   const deleteCartItem = async (cartId) => {
     try {
       const response = await axios.delete(
-        `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/delete-cart/${cartId}`,
+        `${BASE_URL.API}/delete-cart/${cartId}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,

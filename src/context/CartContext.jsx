@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { BASE_URL } from "../Helper/endPoint";
 
 // Context untuk manajemen state keranjang belanja
 const CartContext = createContext();
@@ -9,15 +10,12 @@ export const CartProvider = ({ children }) => {
   // Fungsi update jumlah item keranjang
   const updateCartCount = async () => {
     try {
-      const response = await fetch(
-        "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/carts",
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
-          },
-        }
-      );
+      const response = await fetch(`${BASE_URL.API}/carts`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
+        },
+      });
       const data = await response.json();
       setCartCount(data.data?.length || 0);
     } catch (error) {

@@ -15,6 +15,7 @@ import {
 import useActivities from "../../hooks/useActivity";
 import useCategories from "../../hooks/useCategory";
 import AdminSidebar from "../../components/AdminSidebar";
+import { X } from "lucide-react";
 
 const ActivityManagement = () => {
   /* ===== INISIALISASI HOOKS DAN STATE ===== */
@@ -36,7 +37,9 @@ const ActivityManagement = () => {
   const [isExpanded, setIsExpanded] = useState(true); // Mengatur lebar sidebar
   const [searchTerm, setSearchTerm] = useState(""); // Input pencarian
   const [filteredActivities, setFilteredActivities] = useState([]); // Hasil filter
-  const [showForm, setShowForm] = useState(false); // Tampilkan/sembunyikan form
+  const [showForm, setShowForm] = useState(false); // Tampilkan/sembunyikan
+  const [proofImage, setProofImage] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
 
   // State untuk form input dengan nilai default kosong
   const [formData, setFormData] = useState({
@@ -55,6 +58,26 @@ const ActivityManagement = () => {
     imageUrls: [],
     locationMaps: "",
   });
+
+  // Handler untuk upload gambar
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setProofImage(file);
+      // Membuat preview URL untuk gambar
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Handler untuk menghapus gambar yang dipilih
+  const handleRemoveImage = () => {
+    setProofImage(null);
+    setPreviewUrl(null);
+  };
 
   /* ===== PAGINATION STATE ===== */
   const [currentPage, setCurrentPage] = useState(1); // Halaman saat ini
@@ -85,12 +108,28 @@ const ActivityManagement = () => {
       alert("Category and Title are required!");
       return;
     }
+    if (formData.rating < 0 || formData.rating > 5) {
+      alert("Rating harus antara 0 sampai 5");
+      return;
+    }
+
+    const activityData = {
+      ...formData,
+      imageUrls: previewUrl ? [previewUrl] : formData.imageUrls,
+    };
+
     const success = formData.id
-      ? await updateActivity(formData.id, formData)
-      : await createActivity(formData);
+      ? await updateActivity(formData.id, activityData)
+      : await createActivity(activityData);
+
     if (success) {
       setShowForm(false);
       await refreshActivities();
+      setFormData({
+        /* kosongkan form */
+      });
+      setProofImage(null);
+      setPreviewUrl(null);
     }
   };
 
@@ -112,6 +151,8 @@ const ActivityManagement = () => {
       imageUrls: activity.imageUrls,
       locationMaps: activity.location_maps,
     });
+    setProofImage(null);
+    setPreviewUrl(activity.imageUrls?.[0] || null); // 👈 Tambahan
     setShowForm(true);
   };
 
@@ -141,6 +182,8 @@ const ActivityManagement = () => {
       locationMaps: "",
     });
     setShowForm(true);
+    setProofImage(null);
+    setPreviewUrl(null);
   };
 
   /* ===== PAGINATION CALCULATIONS ===== */
@@ -159,6 +202,8 @@ const ActivityManagement = () => {
       </div>
     );
   }
+
+  console.log(proofImage, previewUrl);
 
   /* ===== MAIN RENDER ===== */
   return (
@@ -214,7 +259,7 @@ const ActivityManagement = () => {
                       placeholder="Judul"
                       value={formData.title}
                       onChange={handleInputChange}
-                      className="p-2 rounded w-full"
+                      className="p-2 rounded w-full text-white"
                       maxLength={20}
                     />
                   </div>
@@ -222,7 +267,7 @@ const ActivityManagement = () => {
                     <label className="text-white">Kategori</label>
                     <select
                       name="categoryId"
-                      value={formData.categoryId}
+                      value={String(formData.categoryId)}
                       onChange={handleInputChange}
                       className="p-2 rounded bg-gray-700 text-white w-full"
                     >
@@ -241,7 +286,7 @@ const ActivityManagement = () => {
                       placeholder="Deskripsi"
                       value={formData.description}
                       onChange={handleInputChange}
-                      className="p-2 rounded w-full"
+                      className="p-2 rounded w-full text-white"
                     />
                   </div>
                   <div className="mb-4">
@@ -252,7 +297,7 @@ const ActivityManagement = () => {
                       placeholder="Harga"
                       value={formData.price}
                       onChange={handleInputChange}
-                      className="p-2 rounded w-full"
+                      className="p-2 rounded w-full text-white"
                     />
                   </div>
                   <div className="mb-4">
@@ -263,7 +308,7 @@ const ActivityManagement = () => {
                       placeholder="Harga Diskon"
                       value={formData.priceDiscount}
                       onChange={handleInputChange}
-                      className="p-2 rounded w-full"
+                      className="p-2 rounded w-full text-white"
                     />
                   </div>
                   <div className="mb-4">
@@ -274,7 +319,7 @@ const ActivityManagement = () => {
                       placeholder="Rating"
                       value={formData.rating}
                       onChange={handleInputChange}
-                      className="p-2 rounded w-full"
+                      className="p-2 rounded w-full text-white"
                     />
                   </div>
                   <div className="mb-4">
@@ -285,7 +330,7 @@ const ActivityManagement = () => {
                       placeholder="Total Ulasan"
                       value={formData.totalReviews}
                       onChange={handleInputChange}
-                      className="p-2 rounded w-full"
+                      className="p-2 rounded w-full text-white"
                     />
                   </div>
                   <div className="col-span-2 mb-4">
@@ -295,7 +340,7 @@ const ActivityManagement = () => {
                       placeholder="Fasilitas"
                       value={formData.facilities}
                       onChange={handleInputChange}
-                      className="p-2 rounded w-full"
+                      className="p-2 rounded w-full text-white"
                     />
                   </div>
                   <div className="mb-4">
@@ -306,7 +351,7 @@ const ActivityManagement = () => {
                       placeholder="Alamat"
                       value={formData.address}
                       onChange={handleInputChange}
-                      className="p-2 rounded w-full"
+                      className="p-2 rounded w-full text-white"
                     />
                   </div>
                   <div className="mb-4">
@@ -317,48 +362,70 @@ const ActivityManagement = () => {
                       placeholder="Provinsi"
                       value={formData.province}
                       onChange={handleInputChange}
-                      className="p-2 rounded w-full"
+                      className="p-2 rounded w-full text-white"
                     />
                   </div>
-                  <div className="mb-4">
-                    <label className="text-white">Kota</label>
+
+                  {/* Upload Image */}
+                  <div className="col-span-2 mb-4">
+                    <label className="text-white">Upload Image Activity</label>
                     <input
-                      type="text"
-                      name="city"
-                      placeholder="Kota"
-                      value={formData.city}
-                      onChange={handleInputChange}
-                      className="p-2 rounded w-full"
+                      type="file"
+                      onChange={handleFileChange}
+                      className="hidden"
+                      id="proof-upload"
+                      accept="image/*"
                     />
+
+                    <label
+                      htmlFor="proof-upload"
+                      className="w-full p-2 rounded bg-gray-700 text-white text-center cursor-pointer block"
+                    >
+                      {formData.imageUrls[0] ? "Change Image" : "Upload Image"}
+                    </label>
+
+                    {previewUrl && (
+                      <div className="mt-2 relative">
+                        <img
+                          src={previewUrl}
+                          alt="Preview"
+                          className="w-full max-h-64 object-contain rounded"
+                        />
+                        <button
+                          onClick={handleRemoveImage}
+                          className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600"
+                        >
+                          <X size={16} />
+                        </button>
+                      </div>
+                    )}
                   </div>
+
                   <div className="col-span-2 mb-4">
                     <label className="text-white">
-                      URL Gambar (dipisahkan koma)
+                      Peta Lokasi (Embed URL)
                     </label>
                     <input
                       type="text"
-                      name="imageUrls"
-                      placeholder="URL Gambar (dipisahkan koma)"
-                      value={formData.imageUrls.join(", ")}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          imageUrls: e.target.value.split(", "),
-                        })
-                      }
-                      className="p-2 rounded w-full"
-                    />
-                  </div>
-                  <div className="col-span-2 mb-4">
-                    <label className="text-white">Peta Lokasi</label>
-                    <input
-                      type="text"
                       name="locationMaps"
-                      placeholder="Peta Lokasi"
+                      placeholder="Masukkan URL embed dari Google Maps"
                       value={formData.locationMaps}
                       onChange={handleInputChange}
-                      className="p-2 rounded w-full"
+                      className="p-2 rounded w-full text-white mb-2"
                     />
+                    {formData.locationMaps && (
+                      <div className="rounded overflow-hidden">
+                        <iframe
+                          src={formData.locationMaps}
+                          width="100%"
+                          height="250"
+                          allowFullScreen=""
+                          loading="lazy"
+                          referrerPolicy="no-referrer-when-downgrade"
+                          className="rounded"
+                        ></iframe>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="mt-4 flex justify-end gap-4">

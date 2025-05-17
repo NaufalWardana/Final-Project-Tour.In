@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { BASE_URL } from "../Helper/endPoint";
 
 // Hook kustom untuk mengelola kategori
 const useCategories = () => {
@@ -11,14 +12,11 @@ const useCategories = () => {
   // Fungsi untuk mengambil semua kategori
   const fetchCategories = async () => {
     try {
-      const response = await axios.get(
-        "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/categories",
-        {
-          headers: {
-            apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
-          },
-        }
-      );
+      const response = await axios.get(`${BASE_URL.API}/categories`, {
+        headers: {
+          apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
+        },
+      });
       setCategories(response.data.data); // Simpan kategori yang diambil ke dalam state
     } catch (err) {
       setError(err.message); // Simpan pesan error ke dalam state
@@ -31,7 +29,7 @@ const useCategories = () => {
   const createCategory = async (categoryData) => {
     try {
       const response = await axios.post(
-        "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/create-category",
+        `${BASE_URL.API}/create-category`,
         {
           name: categoryData.name,
           imageUrl: categoryData.imageUrl,
@@ -56,7 +54,7 @@ const useCategories = () => {
   const updateCategory = async (id, categoryData) => {
     try {
       const response = await axios.post(
-        `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/update-category/${id}`,
+        `${BASE_URL.API}/update-category/${id}`,
         categoryData,
         {
           headers: {
@@ -78,7 +76,7 @@ const useCategories = () => {
   const deleteCategory = async (id) => {
     try {
       const response = await axios.delete(
-        `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/delete-category/${id}`,
+        `${BASE_URL.API}/delete-category/${id}`,
         {
           headers: {
             apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",

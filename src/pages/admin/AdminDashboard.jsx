@@ -12,7 +12,11 @@ const AdminDashboard = () => {
   // Mengambil data dari berbagai custom hooks
   const { promos, loading: promosLoading } = usePromos(); // Data promo
   const { userData, users, loading: usersLoading } = useUserProfile(); // Data user
-  const { transactions, loading: transactionsLoading } = useTransactions(); // Data transaksi
+  const {
+    transactions,
+    loading: transactionsLoading,
+    refreshTransactions,
+  } = useTransactions(); // Data transaksi
   const { activities, loading: activitiesLoading } = useActivities(); // Data aktivitas
 
   // State untuk statistik dashboard
@@ -25,6 +29,10 @@ const AdminDashboard = () => {
 
   // State untuk kontrol sidebar
   const [isExpanded, setIsExpanded] = useState(true);
+
+  useEffect(() => {
+    refreshTransactions();
+  }, []);
 
   /* ===== EFFECT HOOKS ===== */
   // Effect untuk menghitung statistik ketika data tersedia

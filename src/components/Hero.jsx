@@ -87,7 +87,7 @@ const Hero = () => {
                 ${index === currentBanner ? "opacity-100" : "opacity-0"}`}
             >
               <img
-                src="https://cdn.idntimes.com/content-images/post/20151112/karimunjawa-901d2e9d69dd2bfc4070ef83c3c07a24.jpg"
+                src="https://www.balidroneproduction.com/wp-content/uploads/2020/06/bali-drone-production_gallery_-44.jpg"
                 alt="Hero Banner"
                 className="w-full h-full object-cover"
               />

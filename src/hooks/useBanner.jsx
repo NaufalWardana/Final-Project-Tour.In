@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { BASE_URL } from "../Helper/endPoint";
 
 // Hook kustom untuk mengelola banner
 const useBanner = () => {
@@ -11,14 +12,11 @@ const useBanner = () => {
   // Fungsi untuk mengambil semua banner
   const fetchBanners = async () => {
     try {
-      const response = await axios.get(
-        "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/banners",
-        {
-          headers: {
-            apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
-          },
-        }
-      );
+      const response = await axios.get(`${BASE_URL.API}/banners`, {
+        headers: {
+          apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
+        },
+      });
       setBanners(response.data.data); // Simpan banner yang diambil ke dalam state
     } catch (err) {
       setError(err.message); // Simpan pesan error ke dalam state
@@ -36,7 +34,7 @@ const useBanner = () => {
       }
 
       const response = await axios.post(
-        "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/create-banner",
+        `${BASE_URL.API}/create-banner`,
         bannerData,
         {
           headers: {
@@ -67,7 +65,7 @@ const useBanner = () => {
       }
 
       const response = await axios.post(
-        `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/update-banner/${id}`,
+        `${BASE_URL.API}/update-banner/${id}`,
         bannerData,
         {
           headers: {
@@ -93,7 +91,7 @@ const useBanner = () => {
   const deleteBanner = async (id) => {
     try {
       const response = await axios.delete(
-        `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/delete-banner/${id}`,
+        `${BASE_URL.API}/delete-banner/${id}`,
         {
           headers: {
             apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { BASE_URL } from "../Helper/endPoint";
 
 // Hook kustom untuk mengelola aktivitas
 const useActivity = (activityId = null) => {
@@ -12,14 +13,11 @@ const useActivity = (activityId = null) => {
   // Fungsi untuk mengambil semua aktivitas
   const fetchActivities = async () => {
     try {
-      const response = await axios.get(
-        "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/activities",
-        {
-          headers: {
-            apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
-          },
-        }
-      );
+      const response = await axios.get(`${BASE_URL.API}/activities`, {
+        headers: {
+          apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
+        },
+      });
       setActivities(response.data.data); // Simpan aktivitas yang diambil ke dalam state
     } catch (err) {
       setError(err.message); // Simpan pesan error ke dalam state
@@ -31,14 +29,11 @@ const useActivity = (activityId = null) => {
   // Fungsi untuk mengambil detail satu aktivitas berdasarkan ID
   const fetchActivityDetail = async (id) => {
     try {
-      const response = await axios.get(
-        `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/activity/${id}`,
-        {
-          headers: {
-            apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
-          },
-        }
-      );
+      const response = await axios.get(`${BASE_URL.API}/activity/${id}`, {
+        headers: {
+          apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
+        },
+      });
       if (response.status !== 200) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -60,7 +55,7 @@ const useActivity = (activityId = null) => {
 
       // Kirim request dengan field snake_case
       const response = await axios.post(
-        "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/create-activity",
+        `${BASE_URL.API}/create-activity`,
         {
           categoryId: activityData.categoryId,
           title: activityData.title,
@@ -101,7 +96,7 @@ const useActivity = (activityId = null) => {
   const updateActivity = async (id, activityData) => {
     try {
       const response = await axios.post(
-        `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/update-activity/${id}`,
+        `${BASE_URL.API}/update-activity/${id}`,
         {
           categoryId: activityData.categoryId,
           title: activityData.title,
@@ -137,7 +132,7 @@ const useActivity = (activityId = null) => {
   const deleteActivity = async (id) => {
     try {
       const response = await axios.delete(
-        `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/delete-activity/${id}`,
+        `${BASE_URL.API}/delete-activity/${id}`,
         {
           headers: {
             apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",

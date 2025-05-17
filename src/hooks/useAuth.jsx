@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import { BASE_URL } from "../Helper/endPoint";
 
 // Hook kustom untuk mengelola autentikasi
 const useAuth = () => {
@@ -42,10 +43,10 @@ const useAuth = () => {
   const login = async (email, password) => {
     setError("");
     setLoading(true);
-    const success = await handleAuthRequest(
-      "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/login",
-      { email, password }
-    );
+    const success = await handleAuthRequest(`${BASE_URL.API}/login`, {
+      email,
+      password,
+    });
     if (success) {
       const user = JSON.parse(localStorage.getItem("user"));
       const redirectTo =
@@ -72,10 +73,10 @@ const useAuth = () => {
 
     setError("");
     setLoading(true);
-    const success = await handleAuthRequest(
-      "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/register",
-      { ...userData, passwordConfirmation: userData.password }
-    );
+    const success = await handleAuthRequest(`${BASE_URL.API}/register`, {
+      ...userData,
+      passwordConfirmation: userData.password,
+    });
     if (success) {
       const redirectTo =
         new URLSearchParams(location.search).get("prev") || "/";
@@ -89,15 +90,12 @@ const useAuth = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      await axios.get(
-        "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/logout",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
-          },
-        }
-      );
+      await axios.get(`${BASE_URL.API}/logout`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
+        },
+      });
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       navigate("/signin");

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { BASE_URL } from "../Helper/endPoint";
 
 // Hook kustom untuk mengelola profil pengguna
 const useUserProfile = () => {
@@ -22,16 +23,13 @@ const useUserProfile = () => {
       }
 
       try {
-        const response = await axios.get(
-          "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/user",
-          {
-            headers: {
-              "Content-Type": "application/json",
-              apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await axios.get(`${BASE_URL.API}/user`, {
+          headers: {
+            "Content-Type": "application/json",
+            apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
         if (response.status !== 200) {
           throw new Error("Gagal mengambil data profil");
@@ -59,7 +57,7 @@ const useUserProfile = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/update-profile",
+        `${BASE_URL.API}/update-profile`,
         userData,
         {
           headers: {
@@ -86,7 +84,7 @@ const useUserProfile = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/update-user-role/${userId}`,
+        `${BASE_URL.API}/update-user-role/${userId}`,
         { role },
         {
           headers: {
@@ -112,15 +110,12 @@ const useUserProfile = () => {
     setError("");
     setLoading(true);
     try {
-      const response = await axios.get(
-        "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/all-user",
-        {
-          headers: {
-            apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      const response = await axios.get(`${BASE_URL.API}/all-user`, {
+        headers: {
+          apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       if (response.status !== 200) throw new Error(response.data.message);
       setUsers(response.data.data);
       return true;
